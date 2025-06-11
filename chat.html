@@ -145,6 +145,34 @@
       chatBox.innerHTML = "";
       socket.emit("next");
     }
+    const messageInput = document.getElementById("message-input");
+
+// Create and style the typing indicator
+const typingStatus = document.createElement("div");
+typingStatus.id = "typing-status";
+typingStatus.style.fontStyle = "italic";
+typingStatus.style.padding = "0.5rem";
+document.getElementById("chat-box").appendChild(typingStatus);
+
+// Emit typing and stop_typing events
+let typingTimeout;
+messageInput.addEventListener("input", () => {
+  socket.emit("typing");
+
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    socket.emit("stop_typing");
+  }, 1000); // emit stop_typing after 1 second of inactivity
+});
+
+// Show/hide the typing indicator based on socket events
+socket.on("typing", () => {
+  typingStatus.textContent = "Stranger is typing...";
+});
+
+socket.on("stop_typing", () => {
+  typingStatus.textContent = "";
+});
   </script>
 <script>
   function acceptAge() {
