@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Omegle Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      padding: 1rem;
+      background: #222;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    #chat-box {
+      flex-grow: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      background: #1e1e1e;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 70%;
+    }
+
+    .you {
+      background: #0078d7;
+      align-self: flex-end;
+    }
+
+    .stranger {
+      background: #444;
+      align-self: flex-start;
+    }
+
+    #controls {
+      display: flex;
+      padding: 1rem;
+      background: #222;
+      gap: 10px;
+    }
+
+    #message-input {
+      flex-grow: 1;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      background: #0078d7;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Omegle Chat Clone</header>
+
+  <div id="chat-box">
+    <div class="message stranger">Stranger: Hello!</div>
+    <div class="message you">You: Hi there!</div>
+  </div>
+
+  <div id="controls">
+    <input type="text" id="message-input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="nextChat()">Next</button>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('message-input');
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (text !== "") {
+        appendMessage("you", text);
+        input.value = "";
+
+        // Simulate stranger reply (for now)
+        setTimeout(() => {
+          appendMessage("stranger", "Typing...");
+        }, 1000);
+      }
+    }
+
+    function appendMessage(who, text) {
+      const msg = document.createElement('div');
+      msg.className = message ${who};
+      msg.textContent = who === "you" ? You: ${text} : Stranger: ${text};
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function nextChat() {
+      chatBox.innerHTML = "";
+      appendMessage("stranger", "You are now chatting with a new stranger.");
+    }
+  </script>
+
+</body>
+</html>
