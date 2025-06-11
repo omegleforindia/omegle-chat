@@ -102,6 +102,7 @@
   <header>Omegle Clone</header>
 
   <div id="chat-box"></div>
+  <p id="typing-indicator" style="font-style: italic; margin: 0.5rem 1rem; color: gray;"></p>
 
   <div id="controls">
     <input type="text" id="message-input" placeholder="Type your message..." />
@@ -130,6 +131,15 @@
     });
 
     socket.on("message", (msg) => appendMessage("stranger", msg));
+
+socket.on("typing", () => {
+  typingIndicator.textContent = "Stranger is typing...";
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    typingIndicator.textContent = "";
+  }, 1500);
+});
+    
     socket.on("partner-left", () => appendMessage("stranger", "Stranger left the chat."));
 
     function sendMessage() {
