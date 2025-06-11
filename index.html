@@ -2,89 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Omegle Chat</title>
+  <title>Omegle Clone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    header {
-      padding: 1rem;
-      background: #222;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-
-    #chat-box {
-      flex-grow: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      background: #1e1e1e;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .message {
-      margin: 5px 0;
-      padding: 10px;
-      border-radius: 8px;
-      max-width: 70%;
-    }
-
-    .you {
-      background: #0078d7;
-      align-self: flex-end;
-    }
-
-    .stranger {
-      background: #444;
-      align-self: flex-start;
-    }
-
-    #controls {
-      display: flex;
-      padding: 1rem;
-      background: #222;
-      gap: 10px;
-    }
-
-    #message-input {
-      flex-grow: 1;
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-    }
-
-    button {
-      background: #0078d7;
-      border: none;
-      padding: 10px 15px;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #005fa3;
-    }
+    body { font-family: Arial; margin: 0; height: 100vh; display: flex; flex-direction: column; }
+    header { background: #222; color: white; padding: 1rem; text-align: center; }
+    #chat-box { flex: 1; padding: 1rem; background: #f3f3f3; overflow-y: auto; }
+    .message { margin: 0.5rem 0; border-radius: 5px; padding: 0.5rem; max-width: 70%; }
+    .you { background: #0078d7; color: white; margin-left: auto; }
+    .stranger { background: #e0e0e0; margin-right: auto; }
+    #controls { display: flex; padding: 0.5rem; background: #ddd; gap: 0.5rem; }
+    #message-input { flex: 1; padding: 0.5rem; }
+    button { padding: 0.5rem 1rem; background: #0078d7; color: white; border: none; cursor: pointer; }
+    button:hover { background: #005fa3; }
   </style>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 
-  <header>Omegle Chat Clone</header>
+  <header>Omegle Clone</header>
 
-  <div id="chat-box">
-    <div class="message stranger">Stranger: Hello!</div>
-    <div class="message you">You: Hi there!</div>
-  </div>
+  <div id="chat-box"></div>
 
   <div id="controls">
     <input type="text" id="message-input" placeholder="Type your message..." />
@@ -93,33 +31,40 @@
   </div>
 
   <script>
-    const chatBox = document.getElementById('chat-box');
-    const input = document.getElementById('message-input');
+    const backendURL = "https://your-backend-url.onrender.com";
+    const socket = io(backendURL);
 
-    function sendMessage() {
-      const text = input.value.trim();
-      if (text !== "") {
-        appendMessage("you", text);
-        input.value = "";
-
-        // Simulate stranger reply (for now)
-        setTimeout(() => {
-          appendMessage("stranger", "Typing...");
-        }, 1000);
-      }
-    }
+    const chatBox = document.getElementById("chat-box");
+    const input = document.getElementById("message-input");
 
     function appendMessage(who, text) {
-      const msg = document.createElement('div');
-      msg.className = message ${who};
-      msg.textContent = who === "you" ? You: ${text} : Stranger: ${text};
-      chatBox.appendChild(msg);
+      const div = document.createElement("div");
+      div.className = "message " + who;
+      div.textContent = (who === "you" ? "You: " : "Stranger: ") + text;
+      chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    socket.on("matched", () => {
+      chatBox.innerHTML = "";
+      appendMessage("stranger", "You've been matched with a stranger.");
+    });
+
+    socket.on("message", (msg) => appendMessage("stranger", msg));
+    socket.on("partner-left", () => appendMessage("stranger", "Stranger left the chat."));
+
+    function sendMessage() {
+      const msg = input.value.trim();
+      if (msg) {
+        appendMessage("you", msg);
+        socket.emit("message", msg);
+        input.value = "";
+      }
     }
 
     function nextChat() {
       chatBox.innerHTML = "";
-      appendMessage("stranger", "You are now chatting with a new stranger.");
+      socket.emit("next");
     }
   </script>
 
