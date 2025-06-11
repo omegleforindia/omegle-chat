@@ -132,13 +132,6 @@
 
     socket.on("message", (msg) => appendMessage("stranger", msg));
 
-socket.on("typing", () => {
-  typingIndicator.textContent = "Stranger is typing...";
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(() => {
-    typingIndicator.textContent = "";
-  }, 1500);
-});
     
     socket.on("partner-left", () => appendMessage("stranger", "Stranger left the chat."));
 
