@@ -4,18 +4,75 @@
   <meta charset="UTF-8" />
   <title>Omegle Clone</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: Arial; margin: 0; height: 100vh; display: flex; flex-direction: column; }
-    header { background: #222; color: white; padding: 1rem; text-align: center; }
-    #chat-box { flex: 1; padding: 1rem; background: #f3f3f3; overflow-y: auto; }
-    .message { margin: 0.5rem 0; border-radius: 5px; padding: 0.5rem; max-width: 70%; }
-    .you { background: #0078d7; color: white; margin-left: auto; }
-    .stranger { background: #e0e0e0; margin-right: auto; }
-    #controls { display: flex; padding: 0.5rem; background: #ddd; gap: 0.5rem; }
-    #message-input { flex: 1; padding: 0.5rem; }
-    button { padding: 0.5rem 1rem; background: #0078d7; color: white; border: none; cursor: pointer; }
-    button:hover { background: #005fa3; }
-  </style>
+ <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+  }
+
+  header {
+    background: #222;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  #chat-box {
+    flex: 1;
+    padding: 1rem;
+    background: #f3f3f3;
+    overflow-y: auto;
+  }
+
+  .message {
+    margin: 0.5rem 0;
+    border-radius: 5px;
+    padding: 0.5rem;
+    max-width: 80%;
+  }
+
+  .you {
+    background: #0078d7;
+    color: white;
+    margin-left: auto;
+  }
+
+  .stranger {
+    background: #e0e0e0;
+    margin-right: auto;
+  }
+
+  #controls {
+    display: flex;
+    padding: 0.5rem;
+    background: #ddd;
+    gap: 0.5rem;
+  }
+
+  #message-input {
+    flex: 1;
+    padding: 0.5rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    background: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    background: #005fa3;
+  }
+</style>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
