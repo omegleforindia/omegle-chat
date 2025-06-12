@@ -53,6 +53,38 @@
     .start-button:hover {
       background-color: #e5e5e5;
     }
+
+#site-footer {
+  background: #f8f8f8;
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 14px;
+  color: #444;
+  margin-top: 40px;
+}
+
+.footer-links a {
+  color: #007BFF;
+  margin: 0 10px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: Ensure footer is at the very bottom even on short pages */
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+body > footer {
+  margin-top: auto;
+}
+    
   </style>
 </head>
 <body>
@@ -63,12 +95,14 @@
   </div>
 </body>
 
-  <footer style="text-align: center; padding: 20px; font-size: 14px; color: #aaa;">
-  <a href="/privacy.html" target="_blank">Privacy Policy</a> |
-  <a href="/terms.html" target="_blank">Terms & Conditions</a> |
-  <a href="/disclaimer.html" target="_blank">Disclaimer</a> |
-  <a href="/about.html" target="_blank">About</a> |
-  <a href="/contact.html" target="_blank">Contact</a>
+ <footer id="site-footer">
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms & Conditions</a>
+    <a href="/disclaimer.html">Disclaimer</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+  </div>
 </footer>
   
 </html>
