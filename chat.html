@@ -177,17 +177,18 @@ socket.on("stop_typing", () => {
   typingStatus.textContent = "";
 });
 
-    socket.on("message", (msg) => {
-  const lowerMsg = msg.toLowerCase();
-  const hasBadWord = badWords.some(word => lowerMsg.includes(word));
+   socket.on("warning", (msg) => {
+  const warningBox = document.createElement("div");
+  warningBox.textContent = msg;
+  warningBox.style.color = "red";
+  warningBox.style.margin = "10px";
+  warningBox.style.fontWeight = "bold";
+  document.body.appendChild(warningBox);
 
-  if (hasBadWord) {
-    socket.emit("warning", "⚠️ Inappropriate content is not allowed.");
-    return; // just warn, don’t send the message to partner
-  }
-
-  const p = partners.get(socket.id);
-  if (p) io.to(p).emit("message", msg);
+  // Automatically remove the warning after 2 seconds
+  setTimeout(() => {
+    warningBox.remove();
+  }, 2000);
 });
     
   </script>
