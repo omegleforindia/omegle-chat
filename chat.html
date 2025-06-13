@@ -140,14 +140,17 @@
       socket.emit("next");
     }
     // Typing indicator
-    let typingTimeout;
-    input.addEventListener("input", () => {
-      socket.emit("typing");
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => {
-        socket.emit("stop_typing");
-      }, 1000);
-    });
+   // Typing indicator logic with bad word monitoring
+let typingTimeout;
+input.addEventListener("input", () => {
+  const msg = input.value.trim();
+  socket.emit("typing", msg); // send message content for filtering
+
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    socket.emit("stop_typing");
+  }, 1000);
+});
 
     socket.on("typing", () => {
       typingIndicator.textContent = "Stranger is typing...";
