@@ -65,7 +65,6 @@
   </style>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
-
 <body>
   <div id="age-warning" style="position: fixed; z-index: 9999; inset: 0; background-color: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif; text-align: center; padding: 30px;">
     <h1>🔞 Age Restriction</h1>
@@ -75,7 +74,6 @@
       <button onclick="denyAge()" style="padding: 10px 20px;">No, Exit</button>
     </div>
   </div>
-
   <header>OCHAT</header>
   <div id="chat-box"></div>
   <p id="typing-indicator" style="font-style: italic; margin: 0.5rem 1rem; color: gray;"></p>
@@ -84,11 +82,9 @@
     <button onclick="sendMessage()">Send</button>
     <button onclick="nextChat()">Next</button>
   </div>
-
   <script>
     const backendURL = "https://omegle-backend-j8q7.onrender.com";
     const socket = io(backendURL);
-
     const chatBox = document.getElementById("chat-box");
     const input = document.getElementById("message-input");
     const typingIndicator = document.getElementById("typing-indicator");
@@ -139,18 +135,17 @@
       typingIndicator.textContent = "";
       socket.emit("next");
     }
-    // Typing indicator
-   // Typing indicator logic with bad word monitoring
-let typingTimeout;
-input.addEventListener("input", () => {
-  const msg = input.value.trim();
-  socket.emit("typing", msg); // send message content for filtering
 
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(() => {
-    socket.emit("stop_typing");
-  }, 1000);
-});
+    // Typing indicator logic
+    let typingTimeout;
+    input.addEventListener("input", () => {
+      const msg = input.value.trim();
+      socket.emit("typing", msg);
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        socket.emit("stop_typing");
+      }, 1000);
+    });
 
     socket.on("typing", () => {
       typingIndicator.textContent = "Stranger is typing...";
@@ -160,18 +155,15 @@ input.addEventListener("input", () => {
       typingIndicator.textContent = "";
     });
   </script>
-
   <script>
     function acceptAge() {
       localStorage.setItem("ageVerified", "true");
       document.getElementById("age-warning").style.display = "none";
     }
-
     function denyAge() {
       alert("Access denied. Redirecting...");
       window.location.href = "https://www.google.com";
     }
-
     window.onload = function () {
       const verified = localStorage.getItem("ageVerified");
       if (verified === "true") {
