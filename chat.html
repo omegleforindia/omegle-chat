@@ -65,116 +65,116 @@
   </style>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
+
 <body>
-
-<div id="age-warning" style="position: fixed; z-index: 9999; inset: 0; background-color: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif; text-align: center; padding: 30px;">
-  <h1>🔞 Age Restriction</h1>
-  <p style="max-width: 400px;">This website is intended for users 18 years of age or older. By clicking "Yes", you confirm that you are 18+.</p>
-  <div style="margin-top: 20px;">
-    <button onclick="acceptAge()" style="padding: 10px 20px; margin-right: 10px;">Yes, I'm 18+</button>
-    <button onclick="denyAge()" style="padding: 10px 20px;">No, Exit</button>
+  <div id="age-warning" style="position: fixed; z-index: 9999; inset: 0; background-color: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif; text-align: center; padding: 30px;">
+    <h1>🔞 Age Restriction</h1>
+    <p style="max-width: 400px;">This website is intended for users 18 years of age or older. By clicking "Yes", you confirm that you are 18+.</p>
+    <div style="margin-top: 20px;">
+      <button onclick="acceptAge()" style="padding: 10px 20px; margin-right: 10px;">Yes, I'm 18+</button>
+      <button onclick="denyAge()" style="padding: 10px 20px;">No, Exit</button>
+    </div>
   </div>
-</div>
 
-<header>OCHAT</header>
-<div id="chat-box"></div>
-<p id="typing-indicator" style="font-style: italic; margin: 0.5rem 1rem; color: gray;"></p>
+  <header>OCHAT</header>
+  <div id="chat-box"></div>
+  <p id="typing-indicator" style="font-style: italic; margin: 0.5rem 1rem; color: gray;"></p>
+  <div id="controls">
+    <input type="text" id="message-input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="nextChat()">Next</button>
+  </div>
 
-<div id="controls">
-  <input type="text" id="message-input" placeholder="Type your message..." />
-  <button onclick="sendMessage()">Send</button>
-  <button onclick="nextChat()">Next</button>
-</div>
+  <script>
+    const backendURL = "https://omegle-backend-j8q7.onrender.com";
+    const socket = io(backendURL);
 
-<script>
-  const backendURL = "https://omegle-backend-j8q7.onrender.com";
-  const socket = io(backendURL);
-  const chatBox = document.getElementById("chat-box");
-  const input = document.getElementById("message-input");
-  const typingIndicator = document.getElementById("typing-indicator");
+    const chatBox = document.getElementById("chat-box");
+    const input = document.getElementById("message-input");
+    const typingIndicator = document.getElementById("typing-indicator");
 
-  function appendMessage(who, text) {
-    const div = document.createElement("div");
-    div.className = "message " + who;
-    div.textContent = (who === "you" ? "You: " : "Stranger: ") + text;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  socket.on("matched", () => {
-    chatBox.innerHTML = "";
-    appendMessage("stranger", "You've been matched with a stranger.");
-  });
-
-  socket.on("message", (msg) => appendMessage("stranger", msg));
-
-  socket.on("partner-left", () => appendMessage("stranger", "Stranger left the chat."));
-
-  function sendMessage() {
-    const msg = input.value.trim();
-    if (msg) {
-      appendMessage("you", msg);
-      socket.emit("message", msg);
-      input.value = "";
-      socket.emit("stop_typing");
+    function appendMessage(who, text) {
+      const div = document.createElement("div");
+      div.className = "message " + who;
+      div.textContent = (who === "you" ? "You: " : "Stranger: ") + text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
-  }
 
-  function nextChat() {
-    chatBox.innerHTML = "";
-    typingIndicator.textContent = "";
-    socket.emit("next");
-  }
+    socket.on("matched", () => {
+      chatBox.innerHTML = "";
+      appendMessage("stranger", "You've been matched with a stranger.");
+    });
 
-  // Typing indicator logic
-  let typingTimeout;
-  input.addEventListener("input", () => {
-    socket.emit("typing");
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => {
-      socket.emit("stop_typing");
-    }, 1000);
-  });
+    socket.on("message", (msg) => appendMessage("stranger", msg));
 
-  socket.on("typing", () => {
-    typingIndicator.textContent = "Stranger is typing...";
-  });
+    socket.on("partner-left", () => {
+      appendMessage("stranger", "Stranger left the chat.");
+    });
 
-  socket.on("stop_typing", () => {
-    typingIndicator.textContent = "";
-  });
-  // Show warning
-  socket.on("warning", (msg) => {
-    const warningBox = document.createElement("div");
-    warningBox.textContent = msg;
-    warningBox.style.color = "red";
-    warningBox.style.margin = "10px";
-    warningBox.style.fontWeight = "bold";
-    document.body.appendChild(warningBox);
-    setTimeout(() => {
-      warningBox.remove();
-    }, 2000);
-  });
-</script>
+    socket.on("warning", (msg) => {
+      const warningBox = document.createElement("div");
+      warningBox.textContent = msg;
+      warningBox.style.color = "red";
+      warningBox.style.margin = "10px";
+      warningBox.style.fontWeight = "bold";
+      document.body.appendChild(warningBox);
+      setTimeout(() => {
+        warningBox.remove();
+      }, 2000);
+    });
 
-<script>
-  function acceptAge() {
-    localStorage.setItem("ageVerified", "true");
-    document.getElementById("age-warning").style.display = "none";
-  }
+    function sendMessage() {
+      const msg = input.value.trim();
+      if (msg) {
+        appendMessage("you", msg);
+        socket.emit("message", msg);
+        input.value = "";
+        socket.emit("stop_typing");
+      }
+    }
 
-  function denyAge() {
-    alert("Access denied. Redirecting...");
-    window.location.href = "https://www.google.com";
-  }
+    function nextChat() {
+      chatBox.innerHTML = "";
+      typingIndicator.textContent = "";
+      socket.emit("next");
+    }
+    // Typing indicator
+    let typingTimeout;
+    input.addEventListener("input", () => {
+      socket.emit("typing");
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        socket.emit("stop_typing");
+      }, 1000);
+    });
 
-  window.onload = function () {
-    const verified = localStorage.getItem("ageVerified");
-    if (verified === "true") {
+    socket.on("typing", () => {
+      typingIndicator.textContent = "Stranger is typing...";
+    });
+
+    socket.on("stop_typing", () => {
+      typingIndicator.textContent = "";
+    });
+  </script>
+
+  <script>
+    function acceptAge() {
+      localStorage.setItem("ageVerified", "true");
       document.getElementById("age-warning").style.display = "none";
     }
-  };
-</script>
 
+    function denyAge() {
+      alert("Access denied. Redirecting...");
+      window.location.href = "https://www.google.com";
+    }
+
+    window.onload = function () {
+      const verified = localStorage.getItem("ageVerified");
+      if (verified === "true") {
+        document.getElementById("age-warning").style.display = "none";
+      }
+    };
+  </script>
 </body>
 </html>
