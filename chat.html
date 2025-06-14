@@ -1,69 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OCHAT</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>OCHAT</h1>
-    <div id="status">Looking for a stranger...</div>
-    <div class="chat-box" id="chat-box"></div>
-    <textarea id="message" placeholder="Type a message..."></textarea>
-    <div class="buttons">
-      <button id="send">Send</button>
-      <button id="next">Next</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-  <script>
-    const socket = io('https://your-backend-url.onrender.com');
-
-    const status = document.getElementById('status');
-    const chatBox = document.getElementById('chat-box');
-    const messageInput = document.getElementById('message');
-    const sendBtn = document.getElementById('send');
-    const nextBtn = document.getElementById('next');
-
-    function appendMessage(message, from) {
-      const msg = document.createElement('div');
-      msg.className = from;
-      msg.textContent = message;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+  <style>
+    body {
+      font-family: Georgia, serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: white;
+      color: black;
     }
 
-    sendBtn.onclick = () => {
-      const msg = messageInput.value.trim();
-      if (!msg) return;
-      appendMessage(msg, 'me');
-      socket.emit('message', msg);
-      messageInput.value = '';
-    };
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+    }
 
-    nextBtn.onclick = () => {
-      chatBox.innerHTML = '';
-      status.textContent = 'Looking for a stranger...';
-      socket.emit('next');
-    };
+    #status {
+      margin-bottom: 10px;
+    }
 
-    socket.on('matched', () => {
-      status.textContent = 'Connected to a stranger';
+    #messages {
+      margin: 20px 0;
+      white-space: pre-wrap;
+      min-height: 50px;
+    }
+
+    #typing-indicator {
+      font-style: italic;
+      color: gray;
+      height: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>OCHAT</h1>
+  <div id="status">Looking for a stranger...</div>
+  <div id="messages"></div>
+  <div id="typing-indicator"></div>
+  <input id="input" type="text" placeholder="Type a message..." />
+  <br />
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="nextUser()">Next</button>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io("https://your-backend-url.onrender.com"); // replace with your actual backend URL
+
+    const statusDiv = document.getElementById("status");
+    const messagesDiv = document.getElementById("messages");
+    const input = document.getElementById("input");
+    const typingDiv = document.getElementById("typing-indicator");
+
+    let typingTimeout;
+
+    socket.on("matched", () => {
+      statusDiv.textContent = "You’re now chatting with a stranger.";
+      messagesDiv.innerHTML = "";
+      typingDiv.textContent = "";
     });
 
-    socket.on('message', (msg) => {
-      appendMessage(msg, 'stranger');
+    socket.on("message", (msg) => {
+      messagesDiv.innerHTML += ${msg}\n;
+      typingDiv.textContent = "";
     });
 
-    socket.on('partner-left', () => {
-      status.textContent = 'Stranger disconnected';
+    socket.on("partner-left", () => {
+      statusDiv.textContent = "Stranger left. Looking for a new one...";
+      typingDiv.textContent = "";
     });
 
-    socket.on('warning', (msg) => {
-      appendMessage(msg, 'warning');
+    socket.on("typing", () => {
+      typingDiv.textContent = "Stranger is typing...";
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        typingDiv.textContent = "";
+      }, 2000);
+    });
+
+    socket.on("warning", (msg) => {
+      alert(msg);
+    });
+
+    function sendMessage() {
+      const msg = input.value.trim();
+      if (msg !== "") {
+        messagesDiv.innerHTML += ${msg}\n;
+        socket.emit("message", msg);
+        input.value = "";
+        typingDiv.textContent = "";
+      }
+    }
+
+    function nextUser() {
+      socket.emit("next");
+      statusDiv.textContent = "Looking for a stranger...";
+      messagesDiv.innerHTML = "";
+      typingDiv.textContent = "";
+    }
+
+    // Typing indicator emit
+    input.addEventListener("input", () => {
+      socket.emit("typing");
     });
   </script>
 </body>
