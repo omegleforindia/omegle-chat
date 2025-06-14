@@ -2,187 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OCHAT</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      font-family: Arial, sans-serif;
-    }
-    header {
-      background: #222;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    #chat-box {
-      flex: 1;
-      padding: 1rem;
-      background: #f3f3f3;
-      overflow-y: auto;
-    }
-    .message {
-      margin: 0.5rem 0;
-      border-radius: 5px;
-      padding: 0.5rem;
-      max-width: 80%;
-    }
-    .you {
-      background: #0078d7;
-      color: white;
-      margin-left: auto;
-    }
-    .stranger {
-      background: #e0e0e0;
-      margin-right: auto;
-    }
-    #controls {
-      display: flex;
-      padding: 0.5rem;
-      background: #ddd;
-      gap: 0.5rem;
-    }
-    #message-input {
-      flex: 1;
-      padding: 0.5rem;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      background: #0078d7;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    #warning-message {
-      text-align: center;
-      font-weight: bold;
-      color: red;
-      display: none;
-      padding: 5px;
-    }
-  </style>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-  <div id="age-warning" style="position: fixed; z-index: 9999; inset: 0; background-color: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: sans-serif; text-align: center; padding: 30px;">
-    <h1>🔞 Age Restriction</h1>
-    <p style="max-width: 400px;">This website is intended for users 18 years of age or older. By clicking "Yes", you confirm that you are 18+.</p>
-    <div style="margin-top: 20px;">
-      <button onclick="acceptAge()" style="padding: 10px 20px; margin-right: 10px;">Yes, I'm 18+</button>
-      <button onclick="denyAge()" style="padding: 10px 20px;">No, Exit</button>
-    </div>
-  </div>
-
-  <header>OCHAT</header>
+  <h1>OCHAT</h1>
   <div id="chat-box"></div>
-  <p id="typing-indicator" style="font-style: italic; margin: 0.5rem 1rem; color: gray;"></p>
-  <div id="warning-message">⚠️ Inappropriate content is not allowed.</div>
-  <div id="controls">
-    <input type="text" id="message-input" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
-    <button onclick="nextChat()">Next</button>
-  </div>
+  <input type="text" id="messageInput" placeholder="Type your message..." />
+  <button id="sendBtn">Send</button>
+  <button id="nextBtn">Next</button>
 
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    const backendURL = "https://omegle-backend-j8q7.onrender.com"; // Update this if needed
-    const socket = io(backendURL);
+    const socket = io("https://your-backend-url-here"); // Replace this with your Render backend URL
     const chatBox = document.getElementById("chat-box");
-    const input = document.getElementById("message-input");
-    const typingIndicator = document.getElementById("typing-indicator");
-    const warningBox = document.getElementById("warning-message");
+    const input = document.getElementById("messageInput");
 
-    function appendMessage(who, text) {
-      const div = document.createElement("div");
-      div.className = "message " + who;
-      div.textContent = (who === "you" ? "You: " : "Stranger: ") + text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function showWarning(msg) {
-      warningBox.textContent = msg || "⚠️ Inappropriate content is not allowed.";
-      warningBox.style.display = "block";
-      setTimeout(() => {
-        warningBox.style.display = "none";
-      }, 3000);
-    }
-
-    function sendMessage() {
+    document.getElementById("sendBtn").onclick = () => {
       const msg = input.value.trim();
-      if (!msg) return;
-
-      socket.emit("message", msg);
-      input.value = "";
-      socket.emit("stop_typing");
-    }
-
-    function nextChat() {
-      chatBox.innerHTML = "";
-      typingIndicator.textContent = "";
-      socket.emit("next");
-    }
-    input.addEventListener("input", () => {
-      const msg = input.value.trim();
-      socket.emit("typing");
-      clearTimeout(window.typingTimeout);
-      window.typingTimeout = setTimeout(() => {
-        socket.emit("stop_typing");
-      }, 1000);
-    });
-
-    socket.on("matched", () => {
-      chatBox.innerHTML = "";
-      appendMessage("stranger", "You've been matched with a stranger.");
-    });
-
-    socket.on("message", (msg) => {
-      appendMessage("stranger", msg);
-    });
-
-    socket.on("echo", (msg) => {
-      appendMessage("you", msg);
-    });
-
-    socket.on("partner-left", () => {
-      appendMessage("stranger", "Stranger left the chat.");
-    });
-
-    socket.on("typing", () => {
-      typingIndicator.textContent = "Stranger is typing...";
-    });
-
-    socket.on("stop_typing", () => {
-      typingIndicator.textContent = "";
-    });
-
-    socket.on("blocked", (msg) => {
-      showWarning(msg || "⚠️ Inappropriate message blocked.");
-    });
-
-    // Age verification
-    function acceptAge() {
-      localStorage.setItem("ageVerified", "true");
-      document.getElementById("age-warning").style.display = "none";
-    }
-    function denyAge() {
-      alert("Access denied. Redirecting...");
-      window.location.href = "https://www.google.com";
-    }
-    window.onload = function () {
-      const verified = localStorage.getItem("ageVerified");
-      if (verified === "true") {
-        document.getElementById("age-warning").style.display = "none";
+      if (msg) {
+        appendMessage(You: ${msg});
+        socket.emit("message", msg);
+        input.value = "";
       }
     };
+
+    document.getElementById("nextBtn").onclick = () => {
+      chatBox.innerHTML = "🔄 Finding new partner...";
+      socket.emit("next");
+    };
+
+    function appendMessage(message) {
+      const div = document.createElement("div");
+      div.innerText = message;
+      chatBox.appendChild(div);
+    }
+
+    socket.on("message", (msg) => appendMessage(Stranger: ${msg}));
+    socket.on("partner-left", () => appendMessage("❌ Stranger disconnected."));
+    socket.on("matched", () => appendMessage("✅ Connected to a stranger."));
+    socket.on("warning", (msg) => alert(msg));
   </script>
 </body>
 </html>
