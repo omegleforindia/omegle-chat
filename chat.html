@@ -1,47 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OCHAT</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>OCHAT</h1>
-  <div id="chat-box"></div>
-  <input type="text" id="messageInput" placeholder="Type your message..." />
-  <button id="sendBtn">Send</button>
-  <button id="nextBtn">Next</button>
+  <div class="container">
+    <h1>OCHAT</h1>
+    <div id="status">Looking for a stranger...</div>
+    <div class="chat-box" id="chat-box"></div>
+    <textarea id="message" placeholder="Type a message..."></textarea>
+    <div class="buttons">
+      <button id="send">Send</button>
+      <button id="next">Next</button>
+    </div>
+  </div>
 
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    const socket = io("https://your-backend-url-here"); // Replace this with your Render backend URL
-    const chatBox = document.getElementById("chat-box");
-    const input = document.getElementById("messageInput");
+    const socket = io('https://your-backend-url.onrender.com');
 
-    document.getElementById("sendBtn").onclick = () => {
-      const msg = input.value.trim();
-      if (msg) {
-        appendMessage(You: ${msg});
-        socket.emit("message", msg);
-        input.value = "";
-      }
-    };
+    const status = document.getElementById('status');
+    const chatBox = document.getElementById('chat-box');
+    const messageInput = document.getElementById('message');
+    const sendBtn = document.getElementById('send');
+    const nextBtn = document.getElementById('next');
 
-    document.getElementById("nextBtn").onclick = () => {
-      chatBox.innerHTML = "🔄 Finding new partner...";
-      socket.emit("next");
-    };
-
-    function appendMessage(message) {
-      const div = document.createElement("div");
-      div.innerText = message;
-      chatBox.appendChild(div);
+    function appendMessage(message, from) {
+      const msg = document.createElement('div');
+      msg.className = from;
+      msg.textContent = message;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    socket.on("message", (msg) => appendMessage(Stranger: ${msg}));
-    socket.on("partner-left", () => appendMessage("❌ Stranger disconnected."));
-    socket.on("matched", () => appendMessage("✅ Connected to a stranger."));
-    socket.on("warning", (msg) => alert(msg));
+    sendBtn.onclick = () => {
+      const msg = messageInput.value.trim();
+      if (!msg) return;
+      appendMessage(msg, 'me');
+      socket.emit('message', msg);
+      messageInput.value = '';
+    };
+
+    nextBtn.onclick = () => {
+      chatBox.innerHTML = '';
+      status.textContent = 'Looking for a stranger...';
+      socket.emit('next');
+    };
+
+    socket.on('matched', () => {
+      status.textContent = 'Connected to a stranger';
+    });
+
+    socket.on('message', (msg) => {
+      appendMessage(msg, 'stranger');
+    });
+
+    socket.on('partner-left', () => {
+      status.textContent = 'Stranger disconnected';
+    });
+
+    socket.on('warning', (msg) => {
+      appendMessage(msg, 'warning');
+    });
   </script>
 </body>
 </html>
