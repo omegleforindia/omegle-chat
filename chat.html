@@ -120,6 +120,10 @@
       }, 2000);
     });
 
+socket.on("warning", (text) => {
+  alert(text); // You can also show it in chat area if you want
+});
+    
     function sendMessage() {
       const msg = input.value.trim();
       if (msg) {
