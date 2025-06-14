@@ -5,11 +5,7 @@
   <title>OCHAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
+    html, body { height: 100%; margin: 0; padding: 0; }
     body {
       display: flex;
       flex-direction: column;
@@ -62,6 +58,19 @@
     button:hover {
       background: #005fa3;
     }
+    #warning-box {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ffdddd;
+      border: 1px solid red;
+      padding: 10px 20px;
+      font-weight: bold;
+      color: red;
+      z-index: 9999;
+      display: none;
+    }
   </style>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -74,6 +83,9 @@
       <button onclick="denyAge()" style="padding: 10px 20px;">No, Exit</button>
     </div>
   </div>
+
+  <div id="warning-box">⚠️ Inappropriate messages are not allowed.</div>
+
   <header>OCHAT</header>
   <div id="chat-box"></div>
   <p id="typing-indicator" style="font-style: italic; margin: 0.5rem 1rem; color: gray;"></p>
@@ -82,12 +94,14 @@
     <button onclick="sendMessage()">Send</button>
     <button onclick="nextChat()">Next</button>
   </div>
+
   <script>
     const backendURL = "https://omegle-backend-j8q7.onrender.com";
     const socket = io(backendURL);
     const chatBox = document.getElementById("chat-box");
     const input = document.getElementById("message-input");
     const typingIndicator = document.getElementById("typing-indicator");
+    const warningBox = document.getElementById("warning-box");
 
     function appendMessage(who, text) {
       const div = document.createElement("div");
@@ -97,48 +111,45 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+    function showWarning(msg) {
+      warningBox.textContent = msg;
+      warningBox.style.display = "block";
+      setTimeout(() => {
+        warningBox.style.display = "none";
+      }, 3000);
+    }
+
     socket.on("matched", () => {
       chatBox.innerHTML = "";
       appendMessage("stranger", "You've been matched with a stranger.");
     });
 
     socket.on("message", (msg) => appendMessage("stranger", msg));
-
     socket.on("partner-left", () => {
       appendMessage("stranger", "Stranger left the chat.");
     });
 
-    socket.on("warning", (msg) => {
-      const warningBox = document.createElement("div");
-      warningBox.textContent = msg;
-      warningBox.style.color = "red";
-      warningBox.style.margin = "10px";
-      warningBox.style.fontWeight = "bold";
-      document.body.appendChild(warningBox);
-      setTimeout(() => {
-        warningBox.remove();
-      }, 2000);
-    });
+    socket.on("warning", (msg) => showWarning(msg));
 
     function sendMessage() {
       const msg = input.value.trim();
-      if (msg) {
-        appendMessage("you", msg);
-        socket.emit("message", msg);
-        input.value = "";
-        socket.emit("stop_typing");
-      }
+      if (!msg) return;
+
+    socket.emit("message", msg);
+      input.value = "";
+      appendMessage("you", msg);
+      socket.emit("stop_typing");
     }
+
     function nextChat() {
       chatBox.innerHTML = "";
       typingIndicator.textContent = "";
       socket.emit("next");
     }
-      // Typing indicator logic
+
     let typingTimeout;
     input.addEventListener("input", () => {
-      const msg = input.value.trim();
-      socket.emit("typing", msg);
+      socket.emit("typing");
       clearTimeout(typingTimeout);
       typingTimeout = setTimeout(() => {
         socket.emit("stop_typing");
@@ -152,16 +163,17 @@
     socket.on("stop_typing", () => {
       typingIndicator.textContent = "";
     });
-  </script>
-  <script>
+
     function acceptAge() {
       localStorage.setItem("ageVerified", "true");
       document.getElementById("age-warning").style.display = "none";
     }
+
     function denyAge() {
       alert("Access denied. Redirecting...");
       window.location.href = "https://www.google.com";
     }
+
     window.onload = function () {
       const verified = localStorage.getItem("ageVerified");
       if (verified === "true") {
