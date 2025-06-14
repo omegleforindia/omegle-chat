@@ -116,14 +116,34 @@ socket.on("warning", (text) => {
 });
     
     function sendMessage() {
-      const msg = input.value.trim();
-      if (msg) {
-        appendMessage("you", msg);
-        socket.emit("message", msg);
-        input.value = "";
-        socket.emit("stop_typing");
-      }
+  const msg = input.value.trim();
+  if (msg) {
+    const lowerMsg = msg.toLowerCase();
+    const hasBadWord = badWords.some(word => lowerMsg.includes(word));
+
+    if (hasBadWord) {
+      const warningBox = document.createElement("div");
+      warningBox.textContent = "⚠️ Please do not use inappropriate words.";
+      warningBox.style.color = "red";
+      warningBox.style.margin = "10px";
+      warningBox.style.fontWeight = "bold";
+      document.body.appendChild(warningBox);
+
+      setTimeout(() => {
+        warningBox.remove();
+      }, 2000);
+
+      input.value = ""; // clear input box
+      return; // Don't send the message
     }
+
+    // If clean, send the message
+    appendMessage("you", msg);
+    socket.emit("message", msg);
+    input.value = "";
+    socket.emit("stop_typing");
+  }
+}
     function nextChat() {
       chatBox.innerHTML = "";
       typingIndicator.textContent = "";
