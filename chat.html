@@ -83,6 +83,7 @@
     <button onclick="nextChat()">Next</button>
   </div>
   <script>
+    const badWords = ["sex", "fuck", "abuse", "nude", "rape"];
     const backendURL = "https://omegle-backend-j8q7.onrender.com";
     const socket = io(backendURL);
     const chatBox = document.getElementById("chat-box");
