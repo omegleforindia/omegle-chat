@@ -83,9 +83,7 @@
  
 
  <script>
-   socket.on("onlineUsers", (count) => {
-  document.getElementById("onlineCounter").textContent = 👥 Online: ${count};
-});
+   
    // Age Verification Logic
 window.addEventListener("load", () => {
   const ageModal = document.getElementById("age-modal");
@@ -101,7 +99,10 @@ window.addEventListener("load", () => {
   });
 });
   
-    
+socket.on("onlineUsers", (count) => {
+  document.getElementById("onlineCounter").textContent = 👥 Online: ${count};
+});
+   
    const badWords = [
   "sex", "porn", "xxx", "nude", "naked", "boobs", "pussy", "dick", "cock",
   "asshole", "slut", "bitch", "fucking", "fuck", "shit", "damn", "bastard",
