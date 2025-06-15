@@ -80,20 +80,20 @@
  
 
  <script>
-    function acceptAge() {
-      localStorage.setItem("ageVerified", "true");
-      document.getElementById("age-warning").style.display = "none";
-    }
-    function denyAge() {
-      alert("Access denied. Redirecting...");
-      window.location.href = "https://www.google.com";
-    }
-    window.onload = function () {
-      const verified = localStorage.getItem("ageVerified");
-      if (verified === "true") {
-        document.getElementById("age-warning").style.display = "none";
-      }
-    };
+   // Age Verification Logic
+window.addEventListener("load", () => {
+  const ageModal = document.getElementById("age-modal");
+  const yesBtn = document.getElementById("yes-btn");
+  const noBtn = document.getElementById("no-btn");
+
+  yesBtn.addEventListener("click", () => {
+    ageModal.style.display = "none";
+  });
+
+  noBtn.addEventListener("click", () => {
+    window.location.href = "https://www.google.com"; // Or your warning/exit page
+  });
+});
   
     
    const badWords = [
@@ -187,6 +187,50 @@ socket.on("warning", (text) => {
       typingIndicator.textContent = "";
     });
   </script>
- 
+
+
+<!-- Age Verification Modal -->
+<div id="age-modal" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+">
+  <div style="
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  ">
+    <h2>🔞 Age Verification</h2>
+    <p>This site is for <strong>18+ users only</strong>. Are you 18 or older?</p>
+    <br>
+    <button id="yes-btn" style="
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    ">Yes</button>
+    <button id="no-btn" style="
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    ">No</button>
+  </div>
+</div>
+  
 </body>
 </html>
