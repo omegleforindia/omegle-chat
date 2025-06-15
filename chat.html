@@ -83,7 +83,22 @@
     <button onclick="nextChat()">Next</button>
   </div>
   <script>
-  
+   <script>
+    function acceptAge() {
+      localStorage.setItem("ageVerified", "true");
+      document.getElementById("age-warning").style.display = "none";
+    }
+    function denyAge() {
+      alert("Access denied. Redirecting...");
+      window.location.href = "https://www.google.com";
+    }
+    window.onload = function () {
+      const verified = localStorage.getItem("ageVerified");
+      if (verified === "true") {
+        document.getElementById("age-warning").style.display = "none";
+      }
+    };
+  </script>
    const badWords = [
   "sex", "porn", "xxx", "nude", "naked", "boobs", "pussy", "dick", "cock",
   "asshole", "slut", "bitch", "fucking", "fuck", "shit", "damn", "bastard",
@@ -175,21 +190,6 @@ socket.on("warning", (text) => {
       typingIndicator.textContent = "";
     });
   </script>
-  <script>
-    function acceptAge() {
-      localStorage.setItem("ageVerified", "true");
-      document.getElementById("age-warning").style.display = "none";
-    }
-    function denyAge() {
-      alert("Access denied. Redirecting...");
-      window.location.href = "https://www.google.com";
-    }
-    window.onload = function () {
-      const verified = localStorage.getItem("ageVerified");
-      if (verified === "true") {
-        document.getElementById("age-warning").style.display = "none";
-      }
-    };
-  </script>
+ 
 </body>
 </html>
