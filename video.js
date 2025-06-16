@@ -14,6 +14,7 @@ async function init() {
   try {
     console.log("Requesting camera...");
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
     localVideo.srcObject = localStream;
 
     socket.emit("join-video");
@@ -75,12 +76,14 @@ function createPeerConnection() {
   return pc;
 }
 
-init(); // 👈 Start everything
 function nextPerson() {
   if (peerConnection) {
     peerConnection.close();
     peerConnection = null;
   }
+
   remoteVideo.srcObject = null;
   socket.emit("join-video");
 }
+
+init(); // Start the camera and socket events
