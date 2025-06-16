@@ -2,21 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Live Video Chat</title>
   <style>
-    video {
-      width: 300px;
-      border-radius: 10px;
-      margin: 10px;
-    }
+    video { width: 300px; height: 200px; margin: 10px; border-radius: 10px; border: 2px solid black; }
   </style>
 </head>
 <body>
-  <h2>🔴 Live Video Chat</h2>
+  <h2>🔴 <b>Live Video Chat</b></h2>
   <video id="localVideo" autoplay muted></video>
   <video id="remoteVideo" autoplay></video>
   <br />
-  <button id="nextBtn">⏭️ Next</button>
+  <button onclick="next()">⏩ Next</button>
 
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script src="/video.js"></script>
