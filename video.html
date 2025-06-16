@@ -2,38 +2,39 @@
 <html>
 <head>
   <title>Video Chat</title>
- <style>
-  video {
-    width: 100%;
-    max-width: 300px;
-    margin: 10px;
-    border: 2px solid #444;
-    border-radius: 10px;
-  }
-
-  #videos {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 20px;
-  }
-
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 10px;
-  }
-</style>
+  <style>
+    video {
+      width: 100%;
+      max-width: 300px;
+      margin: 10px;
+      border: 2px solid #444;
+      border-radius: 10px;
+    }
+    #videos {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+    }
+  </style>
 </head>
 <body>
   <h2>🔴 Live Video Chat</h2>
-  <video id="myVideo" autoplay muted playsinline></video>
-  <video id="partnerVideo" autoplay playsinline></video>
+  <div id="videos">
+    <video id="localVideo" autoplay muted playsinline></video>
+    <video id="remoteVideo" autoplay playsinline></video>
+  </div>
+
+  <div style="text-align: center;">
+    <button onclick="nextPerson()">⏭️ Next</button>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="video.js"></script>
-  <div style="text-align: center;">
-  <button onclick="nextPerson()">⏭️ Next</button>
-</div>
 </body>
 </html>
