@@ -1,4 +1,4 @@
-const socket = io("http://localhost:4000"); // change this if hosted elsewhere
+const socket = io("http://localhost:10000"); // change this if hosted elsewhere
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
