@@ -76,3 +76,11 @@ function createPeerConnection() {
 }
 
 init(); // 👈 Start everything
+function nextPerson() {
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
+  remoteVideo.srcObject = null;
+  socket.emit("join-video");
+}
