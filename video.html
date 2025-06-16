@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video Chat</title>
+  <style>
+    video {
+      width: 45%;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <h2>🔴 Live Video Chat</h2>
+  <video id="myVideo" autoplay muted playsinline></video>
+  <video id="partnerVideo" autoplay playsinline></video>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="video.js"></script>
+</body>
+</html>
